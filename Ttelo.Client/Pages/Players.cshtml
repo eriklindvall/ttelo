@@ -1,0 +1,78 @@
+﻿@using Ttelo.Shared.Model
+@page "/players"
+@inject HttpClient Http
+
+<h1>Players</h1>
+
+<p>All the players.</p>
+
+@if (players == null)
+{
+<p><em>Loading...</em></p>
+}
+else
+{
+<input type="text" id="newPlayer" bind="@newPlayerName" />
+<button type="submit" onclick="@NewPlayer">Add Player</button>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Id</th>
+            <th>Name</th>
+            <th>Rating</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var player in players)
+            {
+        <tr>
+            <td>@player.PlayerId</td>
+            @if (editingPlayer == player)
+            {
+            <td><input type="text" bind=@player.Name onblur="@SavePlayer" /></td>
+            }
+            else
+            {
+            <td onclick="@(e => EditPlayerName(player.PlayerId))">@player.Name</td>
+            }
+            <td>@player.Rating</td>
+        </tr>
+            }
+    </tbody>
+</table>
+}
+
+@functions {
+
+    Player[] players;
+
+    string newPlayerName = "";
+
+    Player editingPlayer = null;
+
+    protected override async Task OnInitAsync()
+    {
+        players = await Http.GetJsonAsync<Player[]>("/api/Player/List");
+    }
+
+    private async Task NewPlayer()
+    {
+        await Http.PostAsync($"/api/Player/Create?name={newPlayerName}", null);
+        players = await Http.GetJsonAsync<Player[]>("/api/Player/List");
+        this.StateHasChanged();
+    }
+
+    private void EditPlayerName(int id)
+    {
+        editingPlayer = players.Single(p => p.PlayerId == id);
+    }
+
+    private async Task SavePlayer()
+    {
+        await Http.SendJsonAsync(HttpMethod.Put, "/api/Player/Update", editingPlayer);
+        editingPlayer = null;
+        players = await Http.GetJsonAsync<Player[]>("/api/Player/List");
+        this.StateHasChanged();
+    }
+
+}

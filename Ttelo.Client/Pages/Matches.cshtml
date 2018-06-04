@@ -1,0 +1,89 @@
+﻿@using Ttelo.Shared.Model
+@page "/matches"
+@inject HttpClient Http
+
+<h1>Matches</h1>
+
+<p>All the matches.</p>
+
+@if (matches == null || players == null)
+{
+<p><em>Loading...</em></p>
+}
+else
+{
+Winner:
+<select bind="@winner">
+    <option value="0">Winner:</option>
+    @foreach (var player in players)
+    {
+    <option value="@player.PlayerId">@player.Name</option>
+    }
+</select>
+Loser:
+<select bind="@loser">
+    <option value="0">Loser:</option>
+    @foreach (var player in players)
+    {
+    <option value="@player.PlayerId">@player.Name</option>
+    }
+</select>
+<button type="submit" onclick="@SaveMatch">Save Match</button>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Id</th>
+            <th>Date</th>
+            <th>Winner</th>
+            <th>Loser</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var match in matches)
+            {
+        <tr>
+            <td>@match.MatchId</td>
+            <td>@match.Time</td>
+            <td>@match.Winner.Name (+@match.Delta)</td>
+            <td>@match.Loser.Name (-@match.Delta)</td>
+            <td><button type="submit" onclick="@(e => DeleteMatch(match.MatchId))">Delete</button></td>
+        </tr>
+            }
+    </tbody>
+</table>
+
+}
+
+@functions {
+
+    Player[] players;
+    Match[] matches;
+    int winner = 0;
+    int loser = 0;
+
+
+    private async void SaveMatch()
+    {
+        await Http.PostAsync($"/api/Match/Create?winner={winner}&loser={loser}", null);
+        matches = await Http.GetJsonAsync<Match[]>("/api/Match/List");
+        this.StateHasChanged();
+    }
+
+    private async void DeleteMatch(int id)
+    {
+        await Http.SendJsonAsync(HttpMethod.Delete, $"/api/Match/Delete?id={id}", null);
+        matches = await Http.GetJsonAsync<Match[]>("/api/Match/List");
+        this.StateHasChanged();
+    }
+
+
+    protected override async Task OnInitAsync()
+    {
+        var playersTask = Http.GetJsonAsync<Player[]>("/api/Player/List?sort=name");
+        var matchesTask = Http.GetJsonAsync<Match[]>("/api/Match/List");
+        players = await playersTask;
+        matches = await matchesTask;
+    }
+
+}
