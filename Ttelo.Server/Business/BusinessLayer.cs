@@ -101,7 +101,9 @@ namespace Ttelo.Server.Business
 
         private Match ConvertToLocalTime(Match match)
         {
-            match.Time = DateTime.SpecifyKind(match.Time, DateTimeKind.Utc).ToLocalTime();
+            var time = DateTime.SpecifyKind(match.Time, DateTimeKind.Utc).ToLocalTime();
+            //blazor doesnt seem to handle time zones very well - send an unspecified datetime in local as workaround
+            match.Time = new DateTime(time.Year, time.Month, time.Day, time.Hour, time.Minute, time.Second);
             return match;
         }
 
