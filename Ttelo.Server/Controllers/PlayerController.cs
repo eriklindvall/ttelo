@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Linq;
-using Ttelo.Server.DataAccess;
 using Ttelo.Server.Business;
 using Ttelo.Shared.Model;
 
@@ -10,12 +9,10 @@ namespace Ttelo.Server.Controllers
     [Route("api/[controller]")]
     public class PlayerController : Controller
     {
-        private IDataAccessLayer _dataAccessLayer;
         private IBusinessLayer _businessLayer;
 
-        public PlayerController(IDataAccessLayer dataAccessLayer, IBusinessLayer businessLayer)
+        public PlayerController(IBusinessLayer businessLayer)
         {
-            _dataAccessLayer = dataAccessLayer;
             _businessLayer = businessLayer;
         }
         
@@ -24,9 +21,9 @@ namespace Ttelo.Server.Controllers
         {
             if (sort == "name")
             {
-                return _dataAccessLayer.GetAllPlayers().OrderBy(p => p.Name).ToList();
+                return _businessLayer.GetPlayersByName().ToList();
             }
-            return _dataAccessLayer.GetAllPlayers().OrderByDescending(p => p.Rating).ToList();
+            return _businessLayer.GetPlayersByRank().ToList();
         }
 
         [HttpPost("[action]")]
@@ -38,7 +35,7 @@ namespace Ttelo.Server.Controllers
         [HttpPut("[action]")]
         public void Update([FromBody] Player player)
         {
-            _dataAccessLayer.SetName(player);
+            _businessLayer.SetName(player);
         }
 
         [HttpPost("[action]")]

@@ -33,7 +33,6 @@ Loser:
 <table class="table">
     <thead>
         <tr>
-            <th>Id</th>
             <th>Date</th>
             <th>Winner</th>
             <th>Loser</th>
@@ -43,8 +42,7 @@ Loser:
         @foreach (var match in matches)
             {
         <tr>
-            <td>@match.MatchId</td>
-            <td>@match.Time</td>
+            <td>@match.Time.ToString("yyyy-MM-dd HH:mm")</td>
             <td>@match.Winner.Name (+@match.Delta)</td>
             <td>@match.Loser.Name (-@match.Delta)</td>
             <td><button type="submit" onclick="@(e => DeleteMatch(match.MatchId))">Delete</button></td>

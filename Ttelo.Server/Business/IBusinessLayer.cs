@@ -1,4 +1,5 @@
-﻿using Ttelo.Shared.Model;
+﻿using System.Collections.Generic;
+using Ttelo.Shared.Model;
 
 namespace Ttelo.Server.Business
 {
@@ -9,5 +10,9 @@ namespace Ttelo.Server.Business
         Player CreatePlayer(string name);
         Match CreateMatch(int winner, int loser);
         void DeleteMatch(int matchId);
+        IEnumerable<Player> GetPlayersByRank();
+        IEnumerable<Player> GetPlayersByName();
+        IEnumerable<Match> GetMatchesInLocalTime();
+        void SetName(Player player);
     }
 }

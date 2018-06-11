@@ -17,7 +17,7 @@ else
 <table class="table">
     <thead>
         <tr>
-            <th>Id</th>
+            <th>Rank</th>
             <th>Name</th>
             <th>Rating</th>
         </tr>
@@ -26,7 +26,7 @@ else
         @foreach (var player in players)
             {
         <tr>
-            <td>@player.PlayerId</td>
+            <td>@player.Rank</td>
             @if (editingPlayer == player)
             {
             <td><input type="text" bind=@player.Name onblur="@SavePlayer" /></td>

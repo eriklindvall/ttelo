@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Ttelo.Server.DataAccess;
 using Ttelo.Shared.Model;
@@ -67,6 +68,46 @@ namespace Ttelo.Server.Business
         {
             _dataAccessLayer.DeleteMatch(matchId);
             Recalculate();
+        }
+
+        public IEnumerable<Player> GetPlayersByRank()
+        {
+            return _dataAccessLayer
+                .GetAllPlayers()
+                .OrderByDescending(p => p.Rating)
+                .ThenBy(p => p.Name)
+                .Select((player, index) => SetRank(player, index+1));
+        }
+
+        private Player SetRank(Player player, int rank)
+        {
+            player.Rank = rank;
+            return player;
+        }
+
+        public IEnumerable<Player> GetPlayersByName()
+        {
+            return _dataAccessLayer
+                .GetAllPlayers()
+                .OrderBy(p => p.Name);
+        }
+
+        public IEnumerable<Match> GetMatchesInLocalTime()
+        {
+            return _dataAccessLayer.GetAllMatches()
+                .OrderByDescending(m => m.Time)
+                .Select(match => ConvertToLocalTime(match));
+        }
+
+        private Match ConvertToLocalTime(Match match)
+        {
+            match.Time = DateTime.SpecifyKind(match.Time, DateTimeKind.Utc).ToLocalTime();
+            return match;
+        }
+
+        public void SetName(Player player)
+        {
+            _dataAccessLayer.SetName(player);
         }
     }
 }
