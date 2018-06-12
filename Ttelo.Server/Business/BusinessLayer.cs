@@ -92,16 +92,18 @@ namespace Ttelo.Server.Business
                 .OrderBy(p => p.Name);
         }
 
-        public IEnumerable<Match> GetMatchesInLocalTime()
+        public IEnumerable<Match> GetMatchesInSwedishTime()
         {
             return _dataAccessLayer.GetAllMatches()
                 .OrderByDescending(m => m.Time)
-                .Select(match => ConvertToLocalTime(match));
+                .Select(match => ConvertToCest(match));
         }
 
-        private Match ConvertToLocalTime(Match match)
+        private Match ConvertToCest(Match match)
         {
-            var time = DateTime.SpecifyKind(match.Time, DateTimeKind.Utc).ToLocalTime();
+            var time = DateTime.SpecifyKind(match.Time, DateTimeKind.Utc);
+            TimeZoneInfo cet = TimeZoneInfo.FindSystemTimeZoneById("Central European Standard Time");
+            time = TimeZoneInfo.ConvertTime(time, cet);
             //blazor doesnt seem to handle time zones very well - send an unspecified datetime in local as workaround
             match.Time = new DateTime(time.Year, time.Month, time.Day, time.Hour, time.Minute, time.Second);
             return match;

@@ -12,7 +12,7 @@ namespace Ttelo.Server.Business
         void DeleteMatch(int matchId);
         IEnumerable<Player> GetPlayersByRank();
         IEnumerable<Player> GetPlayersByName();
-        IEnumerable<Match> GetMatchesInLocalTime();
+        IEnumerable<Match> GetMatchesInSwedishTime();
         void SetName(Player player);
     }
 }

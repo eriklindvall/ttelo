@@ -19,7 +19,7 @@ namespace Ttelo.Server.Controllers
         [HttpGet("[action]")]
         public IEnumerable<Match> List()
         {
-            return _businessLayer.GetMatchesInLocalTime().ToList();
+            return _businessLayer.GetMatchesInSwedishTime().ToList();
         }
 
         [HttpPost("[action]")]
